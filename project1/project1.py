@@ -219,19 +219,20 @@ def getAugustine():
             t = urllib.request.urlopen(total).read().decode('utf-8', "replace")
             s2 = BeautifulSoup(t, 'html.parser')
             doc = s2.get_text()
-            for i in doc.splitlines():
-                if re.search(r'The', i) or re.search(r'Christian', i) or re.search(r'\t', i) or re.search(r'ROMAN', i):
+            for z in doc.splitlines():
+                if re.search(r'The|Augustine|AUGUSTINI', z) or re.search(r'Christian', z) or re.search(r'\t', z) or re.search(r'ROMAN', z):
                     continue
-                if i == '' or i == ' ':
+                if z == '' or z == ' ' or z == '<' or z == '"':
                     continue
-                m = re.match(r'(\d{1,3})\.(\d{1,3})\.(\d{1,3})', i)
+                m = re.match(r'(\d{1,3})\.(\d{1,3})\.(\d{1,3})', z)
                 if m:
                     book = m.group(1)
                     chapter = m.group(2)
                     verse = m.group(3)
                     continue
-                insert = [title, book, "LATIN", author, dates, str(chapter), str(verse), i, total]
-                schema.append(insert)
+                else:
+                    insert = [title, book, "LATIN", author, dates, str(chapter), str(verse), z, total]
+                    print(insert)
     return schema
 print(getAugustine())
 
