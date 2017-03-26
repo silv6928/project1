@@ -17,7 +17,9 @@ links = {"Magna Carta": "http://www.thelatinlibrary.com/magnacarta.html",
          "Novatian": "http://www.thelatinlibrary.com/novatian.html",
          "Alfonsi": "http://www.thelatinlibrary.com/alfonsi.disciplina.html"}
 
-
+'''
+Base Functions.
+'''
 # create the database to store the text
 def createdb():
     # creates a connection to a db
@@ -33,6 +35,20 @@ def createdb():
         print("latinText table already exists")
         return
 
+
+# Test of the database.
+def testSelect():
+    conn = sqlite3.connect('project1.db')
+    cursor = conn.cursor()
+    cursor.execute('''select * from latinText; ''')
+    print(cursor.fetchall())
+    conn.close()
+
+'''
+Data Capturing from HTML scraping.
+
+
+'''
 
 # Will get the Magna Carta from the Latin Library
 # Assume there is 1 chapter in the document. Each new paragraph is a "verse"
@@ -75,21 +91,11 @@ def insertMagnaCarta():
     conn.close()
 
 
-# Test of the database.
-def testSelect():
-    conn = sqlite3.connect('project1.db')
-    cursor = conn.cursor()
-    cursor.execute('''select * from latinText where title = 'Early Christian Creeds' ''')
-    print(cursor.fetchall())
-    conn.close()
-
-
 # Get the data from the Early Christian Creeds and insert it into a list.
 # Assume a new creed is a new book, only 1 chapter for each book, and each new line given
 # from the HTML is a new verse.
 def getCreeds():
     global links
-    verses = []
     schema = []
     books = []
     link = links["Creeds"]
@@ -133,4 +139,99 @@ def insertCreeds():
     conn.commit()
     conn.close()
 
+
+# Gets the Roman Epitaphs data from the HTML
+# Assume "B" is a book, the number next to it is the chapter
+# and a new line is the verse of the chapter.
+def getRomanEps():
+    global links
+    schema = []
+    link = links["Roman Epitaphs"]
+    req = urllib.request.urlopen(link).read().decode('utf-8', "replace")
+    s = BeautifulSoup(req, 'html.parser')
+    title = s.title.text.strip()
+    author = ""  # unknown
+    dates = ""   # unknown
+    verse = 1
+    chapter = ""
+    doc = str(s.get_text())
+    for i in doc.splitlines():
+        if re.search(r'The', i) or re.search(r'Christian', i) or re.search(r'\t', i) or re.search(r'ROMAN', i):
+            continue
+        if re.search(r'B', i):
+            book = "B"
+            verse = 1
+            m = re.match(r'(B)\s(.*)', i)
+            if m:
+                chapter = m.group(2)
+            continue
+        if re.search(r'CIL', i):
+            book = "CIL"
+            verse = 1
+            m = re.match(r'(CIL)\s(.*)', i)
+            if m:
+                chapter = m.group(2)
+            continue
+        if i == '':
+            continue
+        else:
+            insert = [title, book, "LATIN", author, dates, chapter, str(verse), i, link]
+            schema.append(insert)
+            verse += 1
+    return schema
+
+
+# Insert the Epitaph data into the database
+def insertEpitaphs():
+    conn = sqlite3.connect('project1.db')
+    data = getRomanEps()
+    conn.executemany('''INSERT INTO latinText(title, book, language, author, dates, chapter, verse, passage, link)
+    VALUES(?,?,?,?,?,?,?,?,?)''', data)
+    conn.commit()
+    conn.close()
+
+
+# Get the Augustine data from Latin Library
+def getAugustine():
+    global links
+    schema = []
+    link = links["Augustine"]
+    req = urllib.request.urlopen(link).read().decode('utf-8', "replace")
+    s = BeautifulSoup(req, 'html.parser')
+    title = "AUGUSTINE OF HIPPO"
+    author = s.title.text.strip()
+    dates = "354-430 A.D."
+    prefix = "http://www.thelatinlibrary.com/"
+    book = ""
+    chapter = ""
+    verse = ""
+    tables = s.find_all('table', class_="")
+    for i in tables:
+        if re.search(r'CONFESS', i.text) or re.search(r'DE CIVITATE', i.text) or re.search(r'DE TRINI', i.text) or re.search(r'CONTRA SEC', i.text):
+            text = i.text.replace('\n', '')
+            title = text
+            continue
+        if i.text == "" or re.search(r'Christian|The|de|SERMONES|Regula', i.text):
+            continue
+        textLink = i.find_all("a")
+        for j in textLink:
+            total = prefix + j.get("href")
+            t = urllib.request.urlopen(total).read().decode('utf-8', "replace")
+            s2 = BeautifulSoup(t, 'html.parser')
+            doc = s2.get_text()
+            for i in doc.splitlines():
+                if re.search(r'The', i) or re.search(r'Christian', i) or re.search(r'\t', i) or re.search(r'ROMAN', i):
+                    continue
+                if i == '' or i == ' ':
+                    continue
+                m = re.match(r'(\d{1,3})\.(\d{1,3})\.(\d{1,3})', i)
+                if m:
+                    book = m.group(1)
+                    chapter = m.group(2)
+                    verse = m.group(3)
+                    continue
+                insert = [title, book, "LATIN", author, dates, str(chapter), str(verse), i, total]
+                schema.append(insert)
+    return schema
+print(getAugustine())
 
