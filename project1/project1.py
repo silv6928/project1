@@ -364,6 +364,37 @@ def getGregMag():
     return schema
 
 
+def getBonaventure():
+    schema = []
+    global links
+    link = links["Bonaventure"]
+    s = getHTML("Bonaventure")
+    author = s.title.text.strip()
+    dates = "1221-1274"
+    title = s.find_all("p", class_="pagehead")
+    title = re.sub(r'\n', "", title[1].text)
+    book = title
+    chapters = s.find_all("b")
+    verses = s.find_all("p", class_="")
+    verses = verses[:-1]
+    chapterNum = 0
+    verseNum = 1
+    chapters2 = []
+    for i in verses:
+        data = re.sub(r'\n', '', i.text)
+        if data.isupper():
+            continue
+        if re.search(r'1\.', data):
+            chapterNum += 1
+            verseNum = 1
+        data = re.sub(r'\s?\d{1,3}\.\s', '', data)
+        data = re.sub(r'^\s\s?', '', data)
+        insert = [title, book, "LATIN", author, dates, str(chapterNum), str(verseNum), data, link]
+        schema.append(insert)
+        verseNum += 1
+    return schema
+
+
 '''
 Part B of Phase 1
 Inserting all of the data from the Lists
@@ -424,6 +455,15 @@ def insertAlfonsi():
 def insertGregMag():
     conn = sqlite3.connect('project1.db')
     data = getGregMag()
+    conn.executemany('''INSERT INTO latin(title, book, language, author, dates, chapter, verse, passage, link)
+                VALUES(?,?,?,?,?,?,?,?,?)''', data)
+    conn.commit()
+    conn.close()
+
+
+def insertBonaventure():
+    conn = sqlite3.connect('project1.db')
+    data = getBonaventure()
     conn.executemany('''INSERT INTO latin(title, book, language, author, dates, chapter, verse, passage, link)
                 VALUES(?,?,?,?,?,?,?,?,?)''', data)
     conn.commit()
