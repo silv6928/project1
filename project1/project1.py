@@ -316,7 +316,7 @@ def getAlfonsi():
     author = "Peter Alfonsi"
     dates = ""
     chapters = s.find_all("b", class_="")
-    chapterNum = 1
+    chapterNum = 0
     verseNum = 1
     chapters2 = []
     for i in chapters:
@@ -335,12 +335,40 @@ def getAlfonsi():
         verseNum += 1
     return schema
 
-print(getAlfonsi())
+
+# Assume, one title and one book.
+# Assume, a chapter is a new paragraph
+# Assume, a sentence is a verse.
+def getGregMag():
+    schema = []
+    global links
+    link = links["Gregorius Magnus"]
+    s = getHTML("Gregorius Magnus")
+    title = s.title.text.strip()
+    book = s.find("p", class_="pagehead")
+    book = re.sub(r'\n', '', book.text)
+    author = "Gregorius Magnus"
+    dates = ""
+    chapters = s.find_all("p", class_="")
+    chapters = chapters[:-1]
+    chapterNum = 1
+    for i in chapters:
+        data = re.sub(r'\n', '', i.text)
+        data = data.split(". ")
+        verseNum = 1
+        for j in data:
+            insert = [title, book, "LATIN", author, dates, str(chapterNum), str(verseNum), j, link]
+            schema.append(insert)
+            verseNum += 1
+        chapterNum += 1
+    return schema
+
 
 '''
 Part B of Phase 1
-Inserting all of the data from the stored Lists
+Inserting all of the data from the Lists
 '''
+
 
 # Insert the Magna Carta data into the database.
 # Takes the list generated from getMagnaCarta() and executes many into the database
@@ -382,4 +410,22 @@ def insertNovatian():
     conn.commit()
     conn.close()
 
+
+# Insert the data from the Alfonsi library
+def insertAlfonsi():
+    conn = sqlite3.connect('project1.db')
+    data = getAlfonsi()
+    conn.executemany('''INSERT INTO latin(title, book, language, author, dates, chapter, verse, passage, link)
+            VALUES(?,?,?,?,?,?,?,?,?)''', data)
+    conn.commit()
+    conn.close()
+
+
+def insertGregMag():
+    conn = sqlite3.connect('project1.db')
+    data = getGregMag()
+    conn.executemany('''INSERT INTO latin(title, book, language, author, dates, chapter, verse, passage, link)
+                VALUES(?,?,?,?,?,?,?,?,?)''', data)
+    conn.commit()
+    conn.close()
 
