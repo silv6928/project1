@@ -13,7 +13,6 @@ import random
 links = {"Magna Carta": "http://www.thelatinlibrary.com/magnacarta.html",
          "Creeds": "http://www.thelatinlibrary.com/creeds.html",
          "Roman Epitaphs": "http://www.thelatinlibrary.com/epitaphs.html",
-         "Augustine": "http://www.thelatinlibrary.com/august.html",
          "Novatian": "http://www.thelatinlibrary.com/novatian.html",
          "Alfonsi": "http://www.thelatinlibrary.com/alfonsi.disciplina.html",
          "Gregorius Magnus": "http://www.thelatinlibrary.com/greg.html",
@@ -168,108 +167,6 @@ def getRomanEps():
     return schema
 
 
-# Get the Augustine data from Latin Library
-def getAugustine():
-    global links
-    schema = []
-    link = links["Augustine"]
-    req = urllib.request.urlopen(link).read().decode('utf-8', "replace")
-    s = BeautifulSoup(req, 'html.parser')
-    title = "AUGUSTINE OF HIPPO"
-    author = s.title.text.strip()
-    dates = "354-430 A.D."
-    prefix = "http://www.thelatinlibrary.com/"
-    book = ""
-    bookNum = 1
-    chapter = ""
-    verse = ""
-    verseNum = ""
-    tables = s.find_all('table', class_="")
-    for i in tables:
-        print(i.text)
-        if re.search(r'CONFESS', i.text) or re.search(r'DE CIVITATE', i.text):
-            text = i.text.replace('\n', '')
-            title = text
-            bookNum = 1
-            continue
-        if i.text == "" or re.search(r'Christian|The|de|SERMONES|Regula|CONTRA|DE TRINITATE|IULIANI', i.text):
-            continue
-        textLink = i.find_all("a")
-        for j in textLink:
-            total = prefix + j.get("href")
-            t = urllib.request.urlopen(total).read().decode('utf-8', "replace")
-            s2 = BeautifulSoup(t, 'html.parser')
-            doc = s2.get_text()
-            for z in doc.splitlines():
-                if re.search(r'The|Augustine|AUGUSTINI|commentary|LIBER|PROLOG', z) or re.search(r'Christian', z) or re.search(r'\t', z) or re.search(r'ROMAN', z):
-                    continue
-                if z == '' or z == ' ' or z == '<' or z == '"' or z == '>':
-                    continue
-                m = re.match(r'(\d{1,3})\.(\d{1,3})\.(\d{1,3})', z)
-                if m:
-                    book = m.group(1)
-                    chapter = m.group(2)
-                    verse = m.group(3)
-                    bookNum = int(book)
-                    verseNum = int(verse)
-                    continue
-                m = re.match(r'(\s?\[.*\s?.*?\])\s(.*)\s?', z)
-                content = z
-                if m:
-                    content = m.group(2)
-                    verseNum = 1
-                    chapter = m.group(1)
-                insert = [title, str(bookNum), "LATIN", author, dates, str(chapter), str(verseNum), content, total]
-                verseNum += 1
-                print(insert)
-            bookNum += 1
-    return schema
-
-
-def cleanUp(text):
-    temp = re.sub(r'^\s*', '', text)
-    temp = re.sub(r'\n', ' ', text)
-    return temp
-
-
-def getAugustine2():
-    global links
-    schema = []
-    link = links["Augustine"]
-    req = urllib.request.urlopen(link).read().decode('utf-8', "replace")
-    s = BeautifulSoup(req, 'html.parser')
-    title = "AUGUSTINE OF HIPPO"
-    author = s.title.text.strip()
-    dates = "354-430 A.D."
-    prefix = "http://www.thelatinlibrary.com/"
-    book = ""
-    bookNum = 1
-    chapter = ""
-    verse = ""
-    verseNum = ""
-    tables = s.find_all('table', class_="")
-    for i in tables:
-        if re.search(r'CONFESS', i.text) or re.search(r'DE CIVITATE', i.text):
-            text = i.text.replace('\n', '')
-            title = text
-            bookNum = 1
-            continue
-        if i.text == "" or re.search(r'Christian|The|de|SERMONES|Regula|CONTRA|DE TRINITATE|IULIANI', i.text):
-            continue
-        textLink = i.find_all("a")
-        for j in textLink:
-            total = prefix + j.get("href")
-            t = urllib.request.urlopen(total).read().decode('utf-8', "replace")
-            s2 = BeautifulSoup(t, 'html.parser')
-            doc = s2.find_all('p', class_="")
-            for z in doc:
-                text = cleanUp(z.text)
-                if re.search(r'Augustine|Christian|The', z.text) or z.text == " " or z.text == "\n":
-                    continue
-                print(title)
-
-
-
 # Assume title is Novatian
 # Assume book is NOVATIANI DE TRINITATE
 def getNovatian():
@@ -421,6 +318,7 @@ def insertCreeds():
     VALUES(?,?,?,?,?,?,?,?,?)''', data)
     conn.commit()
     conn.close()
+
 
 # Insert the Epitaph data into the database
 def insertEpitaphs():
