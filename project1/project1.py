@@ -15,7 +15,9 @@ links = {"Magna Carta": "http://www.thelatinlibrary.com/magnacarta.html",
          "Roman Epitaphs": "http://www.thelatinlibrary.com/epitaphs.html",
          "Augustine": "http://www.thelatinlibrary.com/august.html",
          "Novatian": "http://www.thelatinlibrary.com/novatian.html",
-         "Alfonsi": "http://www.thelatinlibrary.com/alfonsi.disciplina.html"}
+         "Alfonsi": "http://www.thelatinlibrary.com/alfonsi.disciplina.html",
+         "Gregorius Magnus": "http://www.thelatinlibrary.com/greg.html",
+         "Bonaventure": "http://www.thelatinlibrary.com/bonaventura.itinerarium.html"}
 
 '''
 Base Functions.
@@ -26,13 +28,13 @@ def createdb():
     # if the db isn't already created it will create a new one.
     try:
         conn = sqlite3.connect('project1.db')
-        conn.execute('''CREATE TABLE latinText
+        conn.execute('''CREATE TABLE latin
         (title TEXT, book TEXT, language TEXT, author TEXT, dates TEXT, chapter TEXT, verse TEXT, passage TEXT, link TEXT)''')
         conn.commit()
         conn.close()
         return
     except:
-        print("latinText table already exists")
+        print("latin table already exists")
         return
 
 
@@ -40,14 +42,21 @@ def createdb():
 def testSelect():
     conn = sqlite3.connect('project1.db')
     cursor = conn.cursor()
-    cursor.execute('''select * from latinText; ''')
+    cursor.execute('''select * from latin; ''')
     print(cursor.fetchall())
     conn.close()
 
+# This will grab the HTML associated with the library
+def getHTML(lib):
+    global links
+    link = links[lib]
+    req = urllib.request.urlopen(link).read().decode('utf-8', "replace")
+    s = BeautifulSoup(req, 'html.parser')
+    return s
+
 '''
+Part A for Project 1 Phase 1
 Data Capturing from HTML scraping.
-
-
 '''
 
 # Will get the Magna Carta from the Latin Library
@@ -78,17 +87,6 @@ def getMagnaCarta():
         inserts = [title, '', "LATIN", author, dates, chapter, str(j), i, link]
         schema.append(inserts)
     return schema
-
-
-# Insert the Magna Carta data into the database.
-# Takes the list generated from getMagnaCarta() and executes many into the database
-def insertMagnaCarta():
-    conn = sqlite3.connect('project1.db')
-    data = getMagnaCarta()
-    conn.executemany('''INSERT INTO latinText(title, book, language, author, dates, chapter, verse, passage, link)
-    VALUES(?,?,?,?,?,?,?,?,?)''', data)
-    conn.commit()
-    conn.close()
 
 
 # Get the data from the Early Christian Creeds and insert it into a list.
@@ -127,17 +125,6 @@ def getCreeds():
             schema.append(inserts)
             verse += 1
     return schema
-
-
-# Insert Creeds data into the database
-# Takes a list of the data provided from the Creeds text and inserts it into the database
-def insertCreeds():
-    conn = sqlite3.connect('project1.db')
-    data = getCreeds()
-    conn.executemany('''INSERT INTO latinText(title, book, language, author, dates, chapter, verse, passage, link)
-    VALUES(?,?,?,?,?,?,?,?,?)''', data)
-    conn.commit()
-    conn.close()
 
 
 # Gets the Roman Epitaphs data from the HTML
@@ -179,16 +166,6 @@ def getRomanEps():
             schema.append(insert)
             verse += 1
     return schema
-
-
-# Insert the Epitaph data into the database
-def insertEpitaphs():
-    conn = sqlite3.connect('project1.db')
-    data = getRomanEps()
-    conn.executemany('''INSERT INTO latinText(title, book, language, author, dates, chapter, verse, passage, link)
-    VALUES(?,?,?,?,?,?,?,?,?)''', data)
-    conn.commit()
-    conn.close()
 
 
 # Get the Augustine data from Latin Library
@@ -290,5 +267,119 @@ def getAugustine2():
                 if re.search(r'Augustine|Christian|The', z.text) or z.text == " " or z.text == "\n":
                     continue
                 print(title)
-getAugustine2()
+
+
+
+# Assume title is Novatian
+# Assume book is NOVATIANI DE TRINITATE
+def getNovatian():
+    s = getHTML("Novatian")
+    title = s.title.text.strip()
+    global links
+    link = links["Novatian"]
+    author = title
+    dates = ""  # couldn't find dates on the page.
+    book = s.find("p", class_="pagehead")
+    book = re.sub(r'\n', '', book.text)
+    chapterNum = 0
+    schema = []
+    # Only pull the paragraphs with no class.
+    # contains the chapters.
+    chapters = s.find_all("p", class_="")
+    # Remove the links from the bottom of the page
+    chapters = chapters[:-1]
+    for i in chapters:
+        chapterNum += 1
+        data = re.sub(r'\xa0', ' ', i.text)
+        data = re.sub(r'\n', ' ', data)
+        data = re.split(r' \d{1,3}\. ', data)
+        data = data[1:]
+        verseNum = 1
+        for j in data:
+            insert = [title, book, "LATIN", author, dates, str(chapterNum), str(verseNum), j, link]
+            schema.append(insert)
+            verseNum += 1
+    return schema
+
+
+# Get Alfonsi data
+# Assume one book, each bold title is a new chapter
+# And every new paragraph under the bold title is a verse
+def getAlfonsi():
+    schema = []
+    global links
+    link = links["Alfonsi"]
+    s = getHTML("Alfonsi")
+    title = s.title.text.strip()
+    title = re.sub(r'\n', '', title)
+    book = "Disciplina clericalis"
+    author = "Peter Alfonsi"
+    dates = ""
+    chapters = s.find_all("b", class_="")
+    chapterNum = 1
+    verseNum = 1
+    chapters2 = []
+    for i in chapters:
+        chapters2.append("\n" + i.text + ". " + "\n")
+    chapters = chapters2
+    verses = s.find_all("p", class_="")
+    verses = verses[:-1]
+    for i in verses:
+        if i.text in chapters:
+            chapterNum += 1
+            verseNum = 1
+            continue
+        data = re.sub(r'\n', ' ', i.text)
+        insert = [title, book, "LATIN", author, dates, str(chapterNum), str(verseNum), data, link]
+        schema.append(insert)
+        verseNum += 1
+    return schema
+
+print(getAlfonsi())
+
+'''
+Part B of Phase 1
+Inserting all of the data from the stored Lists
+'''
+
+# Insert the Magna Carta data into the database.
+# Takes the list generated from getMagnaCarta() and executes many into the database
+def insertMagnaCarta():
+    conn = sqlite3.connect('project1.db')
+    data = getMagnaCarta()
+    conn.executemany('''INSERT INTO latin(title, book, language, author, dates, chapter, verse, passage, link)
+    VALUES(?,?,?,?,?,?,?,?,?)''', data)
+    conn.commit()
+    conn.close()
+
+
+# Insert Creeds data into the database
+# Takes a list of the data provided from the Creeds text and inserts it into the database
+def insertCreeds():
+    conn = sqlite3.connect('project1.db')
+    data = getCreeds()
+    conn.executemany('''INSERT INTO latin(title, book, language, author, dates, chapter, verse, passage, link)
+    VALUES(?,?,?,?,?,?,?,?,?)''', data)
+    conn.commit()
+    conn.close()
+
+# Insert the Epitaph data into the database
+def insertEpitaphs():
+    conn = sqlite3.connect('project1.db')
+    data = getRomanEps()
+    conn.executemany('''INSERT INTO latin(title, book, language, author, dates, chapter, verse, passage, link)
+    VALUES(?,?,?,?,?,?,?,?,?)''', data)
+    conn.commit()
+    conn.close()
+
+
+# Insert the data from Novatian library
+def insertNovatian():
+    conn = sqlite3.connect('project1.db')
+    data = getNovatian()
+    conn.executemany('''INSERT INTO latin(title, book, language, author, dates, chapter, verse, passage, link)
+        VALUES(?,?,?,?,?,?,?,?,?)''', data)
+    conn.commit()
+    conn.close()
+
 

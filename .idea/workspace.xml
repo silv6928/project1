@@ -20,8 +20,8 @@
       <file leaf-file-name="project1.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/project1/project1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="273" column="20" lean-forward="false" selection-start-line="273" selection-start-column="20" selection-end-line="273" selection-end-column="20" />
+            <state relative-caret-position="-1149">
+              <caret line="306" column="57" lean-forward="false" selection-start-line="306" selection-start-column="57" selection-end-line="306" selection-end-column="57" />
               <folding>
                 <element signature="e#49#78#0" expanded="true" />
               </folding>
@@ -286,6 +286,9 @@
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
   </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="2a2a5440-ec49-4154-8f40-3af0b57a1842" name="Default" comment="" />
@@ -380,8 +383,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/project1/project1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="273" column="20" lean-forward="false" selection-start-line="273" selection-start-column="20" selection-end-line="273" selection-end-column="20" />
+        <state relative-caret-position="-1149">
+          <caret line="306" column="57" lean-forward="false" selection-start-line="306" selection-start-column="57" selection-end-line="306" selection-end-column="57" />
           <folding>
             <element signature="e#49#78#0" expanded="true" />
           </folding>
