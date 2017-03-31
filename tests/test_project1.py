@@ -10,6 +10,7 @@ def test_db_create():
     cur = conn.cursor()
     assert cur
 
+
 '''
 Test to make sure the extracts of data lists are not empty
 If they are not empty then the data was extracted
@@ -67,3 +68,49 @@ def test_pop_MagnaCarta():
     assert cur.fetchall()
 
 
+def test_pop_Creeds():
+    project1.insertCreeds()
+    conn = sqlite3.connect('project1.db')
+    cur = conn.cursor()
+    cur.execute('''select * from latin where title = 'Early Christian Creeds';''')
+    assert cur.fetchall()
+
+
+def test_pop_RomanEps():
+    project1.insertEpitaphs()
+    conn = sqlite3.connect('project1.db')
+    cur = conn.cursor()
+    cur.execute('''select * from latin where title = 'ROMAN EPITAPHS';''')
+    assert cur.fetchall()
+
+
+def test_pop_Nov():
+    project1.insertNovatian()
+    conn = sqlite3.connect('project1.db')
+    cur = conn.cursor()
+    cur.execute('''select * from latin where title = 'Novatian';''')
+    assert cur.fetchall()
+
+
+def test_pop_Alfonsi():
+    project1.insertAlfonsi()
+    conn = sqlite3.connect('project1.db')
+    cur = conn.cursor()
+    cur.execute('''select * from latin where title = 'Peter Alfonsi: Disciplina clericalis';''')
+    assert cur.fetchall()
+
+
+def test_pop_Bonaventure():
+    project1.insertBonaventure()
+    conn = sqlite3.connect('project1.db')
+    cur = conn.cursor()
+    cur.execute('''select * from latin where title = 'ITINERARIUM MENTIS IN DEUM';''')
+    assert cur.fetchall()
+
+
+def test_pop_GregMag():
+    project1.insertGregMag()
+    conn = sqlite3.connect('project1.db')
+    cur = conn.cursor()
+    cur.execute('''select * from latin where title = 'Letter of Gregory the Great';''')
+    assert cur.fetchall()
