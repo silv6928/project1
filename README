@@ -82,7 +82,7 @@ First make sure you have your virtual environment activated
 You can run the project by utilizing tests to make sure that the project ran properly.
 Navigate to inside the project1 directory.
 Load the contents of the directory into editable mode. (pip3 install -e .) (Not sure if step is actually needed)
-Next use the command python3 setup.py test.
+Next use the command: python3 setup.py test
 All unit tests should pass.
 Please note, an additional .cfg file was added to the project folder based on information provided by the pytest documentation
 In order to run the unit tests please make sure if you have ran the project before that you delete the database that was created. (See Bugs/Edge Cases).
