@@ -1,6 +1,40 @@
-<title>Project 1
-Tony Silva
-CS 5970</title>
+Project 1
+CS 5970
+Author: Tony Silva
+Email: tony.silva@ou.edu
+
+Introduction:
+
+The project that was developed in this package is for the University of Oklahoma CS 5970 - Introduction to Text Analytics. This is the first phase of Project 1, Data Extraction and Database Population.
+The goal of this project was to extract the text of 7 different latin texts from www.thelatinlibrary.com and store the textual data into a sqlite3 database. The second phase of the project will be added to this project as it is developed.
+
+Attached with this project submission is a version of the database that was created from running the project. It will have all of the data stored into the database. The database was renamed for the sake of not messing with any runs of the program.
+Please see "Bugs/Edge Cases" section below if you have any questions.
+
+Project 1:
+In the first phase of the project, multiple activities were performed. First, a database called "project1" was created with the schema as required by the project details. Next, the data was extracted from The Latin Library website.
+The Latin Library provides numerous of documents by different philosophers/authors/etc. from late B.C. to early A.D. We were tasked with selecting 7 different instances from the Latin Library, to extract its text, and store that text into a sqlite3 database.
+The seven instances I chose were as follows: Magna Carta, Christian Creeds, Roman Epitaphs, Novatian, Alfonsi, Bonaventure, and Gregorius Magnus.
+The tricky part of the first phase of this project was that every instance on the Latin Library had differing formatting, and different HTML formatting. For each of the different instances, I created a new way to extract the text from the associated webpage.
+The way the text was extracted was through the act of "screen scraping". The screen scraping was performed by utilizing the python package Beautiful Soup 4. Beautiful Soup offers a great way to extract data from html tags on a web page.
+For each of the different extracts, Beautiful Soup was utilized along with Regular Expressions in order to format the data correctly. For each of the extract functions in the project, the data is extracted as a list of list following the exact schema of the sqlite3 database.
+This made it easier to insert the data into the project 1 database. However, due to the different kinds of instances/documents that were delt with in the project, assumptions had to be made regarding the how the data was to be stored.
+For example: The Magna Carta is one document. Therefore, it does not necessarily have multiple "books" associated with the document, therefore an assumption had to be made regarding this latin instance.
+Those assumptions can be seen below in the section title "Project 1 Text Assumptions"
+
+Project 1 Text Assumptions:
 
 
-Introduction
+Language: Python 3
+
+Requirements:
+Please see the requirements.txt file in the project folder in order to know what packages are needed to run this package
+You can utilize a virtual environment to download certain packaging requirements.
+Please make sure you have internet connection.
+
+How to run:
+
+Bugs/Edge Cases:
+The program does not automatically handle multiple runs. If multiple runs are performed the database will just append the same
+data into the "latin" table so there will be duplicate records.
+If you want to run for a second time, please ake sure the project1.db database is deleted.
