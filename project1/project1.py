@@ -21,6 +21,8 @@ links = {"Magna Carta": "http://www.thelatinlibrary.com/magnacarta.html",
 '''
 Base Functions.
 '''
+
+
 # create the database to store the text
 def createdb():
     # creates a connection to a db
@@ -45,6 +47,7 @@ def testSelect():
     print(cursor.fetchall())
     conn.close()
 
+
 # This will grab the HTML associated with the library
 def getHTML(lib):
     global links
@@ -57,6 +60,7 @@ def getHTML(lib):
 Part A for Project 1 Phase 1
 Data Capturing from HTML scraping.
 '''
+
 
 # Will get the Magna Carta from the Latin Library
 # Assume there is 1 chapter in the document. Each new paragraph is a "verse"
