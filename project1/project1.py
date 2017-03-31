@@ -131,7 +131,7 @@ def getCreeds():
 
 
 # Gets the Roman Epitaphs data from the HTML
-# Assume "B" is a book, the number next to it is the chapter
+# Assume "B" and "CIL are books, the number next to it is the chapter
 # and a new line is the verse of the chapter.
 def getRomanEps():
     global links
@@ -173,6 +173,8 @@ def getRomanEps():
 
 # Assume title is Novatian
 # Assume book is NOVATIANI DE TRINITATE
+# New paragraph is a new chapter
+# Use Regex to find verses in the paragraph
 def getNovatian():
     s = getHTML("Novatian")
     title = s.title.text.strip()
@@ -265,6 +267,9 @@ def getGregMag():
     return schema
 
 
+# Assume there is one title, and one book.
+# Assume that a new chapter is designated by bold header.
+# Assume that a new verse begins with a number followed by a period.
 def getBonaventure():
     schema = []
     global links
