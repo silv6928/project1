@@ -58,6 +58,7 @@ You can utilize a virtual environment to download certain packaging requirements
 Please make sure you have internet connection.
 
 How to run:
+Please note - the project1 project folder is contained in another directory called project1_silv6928. This was done for submission purposes.
 First make sure all of the requirements, in the requirements.txt file, (see above) are satisfied. This can be done through a virtual environment.
 Next make sure the the project1 project folder is saved to your home directory (~/).
 
