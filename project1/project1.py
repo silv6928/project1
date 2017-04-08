@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 import urllib.request
 import sqlite3
 import re
+import requests
+import sys
 import os
 import random
 
@@ -376,3 +378,92 @@ def insertBonaventure():
     conn.commit()
     conn.close()
 
+'''
+Begin Phase 2 of Project 1
+Parts C and D
+Translation Services
+and UI
+'''
+
+
+# Create the Full Test Search Table
+def create_fts_table():
+    # creates a connection to a db
+    # if the db isn't already created it will create a new one.
+    try:
+        conn = sqlite3.connect('project1.db')
+        conn.execute('''CREATE VIRTUAL TABLE latin_fts USING fts4 (title, book,
+        language, author, dates, chapter, verse, passage, link)''')
+        conn.commit()
+        conn.close()
+        return
+    except:
+        print("latin_fts table already exists")
+        return
+
+
+# Populate the FTS table with the content from the latin table
+def populate_fts_table():
+    conn = sqlite3.connect('project1.db')
+    conn.execute('''INSERT INTO latin_fts(title, book, language, author, dates, chapter, verse, passage, link)
+    select * from latin;''')
+    conn.commit()
+    conn.close()
+
+
+def get_latin_translation(phrase):
+    parameters = {"q": phrase, "langpair": "en|lat"}
+    data = requests.get("http://api.mymemory.translated.net/get", params=parameters)
+    return data.json()["responseData"]["translatedText"]
+
+
+# Search the Database for the Latin search term
+def search_db_latin(phrase):
+    conn = sqlite3.connect('project1.db')
+    cursor = conn.cursor()
+    cursor.execute('''SELECT * FROM latin_fts WHERE passage MATCH ? ;''', phrase)
+    data = cursor.fetchall()
+    conn.close()
+    return data
+
+
+# Perform the query search of the database depending on what the user selects
+def get_phrase(num):
+    print("Please enter your search/translation term:")
+    phrase = str(input())
+    if num == 1:
+        print("Here are your search results")
+        data = search_db_latin(phrase)
+        print(data)
+    elif num == 2:
+        print("Here is your translation:")
+        data = get_latin_translation(phrase)
+        print(data)
+        print("Here are your search results")
+        data = search_db_latin(data)
+        print(data)
+    else:
+        print("Here is your graph")
+
+
+def user_interface():
+    print("Welcome to the Application")
+    print("This application allows you to do multiple things with the Latin Library ")
+    print("Enter 1 for a Latin Search of the Database")
+    print("Enter 2 for a English to Latin Translation and a Search of the Database")
+    print("Enter 3 for a visualization of a search term")
+    print("Enter 0 to exit application")
+    num = 99
+    while num != 0:
+        num = int(str(input()))
+        if num == 1:
+            print("You selected Latin Search")
+            get_phrase(num)
+        elif num == 2:
+            print("You selected English to Latin Translation and Search")
+            get_phrase(num)
+        elif num == 3:
+            print("You selected a visualization of a search term")
+            get_phrase(num)
+        if num == 0:
+            print("You selected to exit the application")

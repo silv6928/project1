@@ -114,3 +114,9 @@ def test_pop_GregMag():
     cur = conn.cursor()
     cur.execute('''select * from latin where title = 'Letter of Gregory the Great';''')
     assert cur.fetchall()
+
+'''
+Tests for the Translation Services
+'''
+
+# Need to test to see if dog == canis
