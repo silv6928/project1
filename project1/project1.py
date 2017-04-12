@@ -405,8 +405,7 @@ def create_fts_table():
 # Populate the FTS table with the content from the latin table
 def populate_fts_table():
     conn = sqlite3.connect('project1.db')
-    conn.execute('''INSERT INTO latin_fts(title, book, language, author, dates, chapter, verse, passage, link)
-    select * from latin;''')
+    conn.execute('''INSERT INTO latin_fts select * from latin;''')
     conn.commit()
     conn.close()
 
@@ -421,27 +420,33 @@ def get_latin_translation(phrase):
 def search_db_latin(phrase):
     conn = sqlite3.connect('project1.db')
     cursor = conn.cursor()
-    cursor.execute('''SELECT * FROM latin_fts WHERE passage MATCH ? ;''', phrase)
+    cursor.execute('''SELECT * FROM latin_fts WHERE passage MATCH ?''', (phrase,))
     data = cursor.fetchall()
+    print("Snippets for Phrase", phrase)
+    j = 1
+    for i in data:
+        print("Snippet", j)
+        print(i[7])
+        print("Link", j)
+        print(i[8])
+        j += 1
     conn.close()
-    return data
 
 
 # Perform the query search of the database depending on what the user selects
 def get_phrase(num):
     print("Please enter your search/translation term:")
-    phrase = str(input())
+    phrase = input('--> ')
     if num == 1:
         print("Here are your search results")
-        data = search_db_latin(phrase)
-        print(data)
+        search_db_latin(phrase)
     elif num == 2:
         print("Here is your translation:")
         data = get_latin_translation(phrase)
         print(data)
         print("Here are your search results")
-        data = search_db_latin(data)
-        print(data)
+        search_db_latin(data)
+
     else:
         print("Here is your graph")
 
@@ -455,15 +460,27 @@ def user_interface():
     print("Enter 0 to exit application")
     num = 99
     while num != 0:
-        num = int(str(input()))
+        num = int(str(input('--> ')))
         if num == 1:
             print("You selected Latin Search")
             get_phrase(num)
+            print("Enter 1 for a Latin Search of the Database")
+            print("Enter 2 for a English to Latin Translation and a Search of the Database")
+            print("Enter 3 for a visualization of a search term")
+            print("Enter 0 to exit application")
         elif num == 2:
             print("You selected English to Latin Translation and Search")
             get_phrase(num)
+            print("Enter 1 for a Latin Search of the Database")
+            print("Enter 2 for a English to Latin Translation and a Search of the Database")
+            print("Enter 3 for a visualization of a search term")
+            print("Enter 0 to exit application")
         elif num == 3:
             print("You selected a visualization of a search term")
             get_phrase(num)
+            print("Enter 1 for a Latin Search of the Database")
+            print("Enter 2 for a English to Latin Translation and a Search of the Database")
+            print("Enter 3 for a visualization of a search term")
+            print("Enter 0 to exit application")
         if num == 0:
             print("You selected to exit the application")
