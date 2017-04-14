@@ -1,6 +1,15 @@
 beautifulsoup4==4.5.3
 bs4==0.0.1
+cycler==0.10.0
+matplotlib==2.0.0
+numpy==1.12.1
 py==1.4.33
+pyparsing==2.2.0
 pytest==3.0.7
 pytest-runner==2.11.1
+python-dateutil==2.6.0
+pytz==2017.2
 requests==2.13.0
+six==1.10.0
+
+

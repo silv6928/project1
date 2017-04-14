@@ -7,9 +7,11 @@ import urllib.request
 import sqlite3
 import re
 import requests
-import sys
-import os
-import random
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 # Links to Text
 links = {"Magna Carta": "http://www.thelatinlibrary.com/magnacarta.html",
@@ -422,7 +424,22 @@ def search_db_latin(phrase):
     cursor = conn.cursor()
     cursor.execute('''SELECT * FROM latin_fts WHERE passage MATCH ?''', (phrase,))
     data = cursor.fetchall()
-    print("Snippets for Phrase", phrase)
+    conn.close()
+    return data
+
+
+def search_db_occ(phrase):
+    conn = sqlite3.connect('project1.db')
+    cursor = conn.cursor()
+    cursor.execute('''SELECT title, count(*) FROM latin_fts WHERE passage MATCH ? GROUP BY title''', (phrase,))
+    data = cursor.fetchall()
+    conn.close()
+    return data
+
+
+# Print the terms of data
+def print_term_search(data, phrase):
+    print("Snippets for Phrase:", phrase)
     j = 1
     for i in data:
         print("Snippet", j)
@@ -430,25 +447,67 @@ def search_db_latin(phrase):
         print("Link", j)
         print(i[8])
         j += 1
-    conn.close()
+
 
 
 # Perform the query search of the database depending on what the user selects
 def get_phrase(num):
-    print("Please enter your search/translation term:")
-    phrase = input('--> ')
     if num == 1:
+        print("Please enter your search/translation term:")
+        phrase = input('--> ')
         print("Here are your search results")
-        search_db_latin(phrase)
+        data = search_db_latin(phrase)
+        print_term_search(data, phrase)
     elif num == 2:
+        print("Please enter your search/translation term:")
+        phrase = input('--> ')
         print("Here is your translation:")
         data = get_latin_translation(phrase)
         print(data)
         print("Here are your search results")
-        search_db_latin(data)
-
+        data = search_db_latin(data)
+        print_term_search(data, phrase)
     else:
-        print("Here is your graph")
+        phrase2 = 0
+        while phrase2 != 1 or phrase2 != 2:
+            print("Enter 1 for a Latin Term Visualization")
+            print("Enter 2 for a English to Latin Translation and a Visualization")
+            print("Enter 0 if you want to go back")
+            phrase2 = int(str(input('--> ')))
+            if phrase2 == 1:
+                print("You selected a Latin Visualization")
+                print("Please enter your search/translation term:")
+                phrase = input('--> ')
+                data = search_db_occ(phrase)
+                print("Here is your graph")
+                create_graph(data, phrase)
+                break
+            elif phrase2 == 2:
+                print("You selected an English Translation and a Visualization")
+                print("Please enter your search/translation term:")
+                phrase = input('--> ')
+                phrase = get_latin_translation(phrase)
+                data = search_db_occ(phrase)
+                print("Here is your graph")
+                create_graph(data,phrase)
+                break
+            elif phrase2 == 0:
+                break
+
+
+# Create the graph of data
+def create_graph(data, phrase):
+    x = [data[i][0] for i in range(len(data))]
+    y = [data[i][1] for i in range(len(data))]
+    ind = np.arange(len(data))
+    width = 1/1.5
+    plt.bar(ind, y, width, align='center', color="blue")
+    title = "Number of Times " + phrase + " Occurs in each Title"
+    plt.title(title)
+    plt.xticks(ind, x)
+    plt.ylabel("Occurrences")
+    plt.xlabel("Titles")
+    plt.show()
 
 
 def user_interface():
