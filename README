@@ -9,6 +9,7 @@ The project that was developed in this package is for the University of Oklahoma
 The goal of this project was to extract the text of 7 different latin texts from www.thelatinlibrary.com and store the textual data into a sqlite3 database. The second phase of the project will be added to this project as it is developed.
 
 Attached with this project submission is a version of the database that was created from running the project. It will have all of the data stored into the database. The database was renamed for the sake of not messing with any runs of the program.
+Please note: the project folder was turned in inside of another folder named "project1_silva6928", this folder contains the project1 folder and the project1_submit database.
 Please see "Bugs/Edge Cases" section below if you have any questions.
 
 Project 1 Phase 1:
