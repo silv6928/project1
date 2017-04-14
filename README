@@ -30,6 +30,8 @@ Additionally, a Command Line User Interface was created to facilitate the intera
 If the term does not appear in a title then there will not be a bar within the graph. The translation services utilizes a REST API provided by mymemory.translated.net. The translation will take an English Term and translated it to the Latin term and print the Latin translated term. The system will provide the passages and links to where the search term appears.
 for both Latin and the English to Latin translation.
 
+In order to get the visualization to work on the GPEL machines please use the command "ssh -X" when attempting to SSH into one of the machines
+
 Project 1 Text Assumptions:
 
 Magna Carta (http://www.thelatinlibrary.com/magnacarta.html):
@@ -78,6 +80,7 @@ The program will create the project1 database in your home directory. Additional
 Entering 1 will allow for a Latin term search
 Entering 2 will allow for a English Translation and term search
 Entering 3 will allow for you to create a visualization of a Latin or English(Latin translated) frequency chart.
+In order to get the visualization to work on the GPEL machines please use the command "ssh -X" when attempting to SSH into one of the machines
 If you enter 0 you will close the interface.
 Please see section on Bugs/Edge Cases on multiple runs.
 
