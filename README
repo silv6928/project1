@@ -29,6 +29,7 @@ In the second phase of the project, multiple activities were performed. First, a
 Additionally, a Command Line User Interface was created to facilitate the interaction between the database and the user. The user interface allows the user to request to search for a Latin Term, translate an English term into Latin, and create a visualization of the number of occurences the term appears in a title.
 If the term does not appear in a title then there will not be a bar within the graph. The translation services utilizes a REST API provided by mymemory.translated.net. The translation will take an English Term and translated it to the Latin term and print the Latin translated term. The system will provide the passages and links to where the search term appears.
 for both Latin and the English to Latin translation.
+The searching will provide each snippet the term appears in as well as the link to The Latin Library.
 
 In order to get the visualization to work on the GPEL machines please use the command "ssh -X" when attempting to SSH into one of the machines
 

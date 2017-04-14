@@ -413,7 +413,7 @@ def populate_fts_table():
 
 
 def get_latin_translation(phrase):
-    parameters = {"q": phrase, "langpair": "en|lat"}
+    parameters = {"q": phrase, "langpair": "en|la"}
     data = requests.get("http://api.mymemory.translated.net/get", params=parameters)
     return data.json()["responseData"]["translatedText"]
 
