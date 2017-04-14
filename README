@@ -11,7 +11,7 @@ The goal of this project was to extract the text of 7 different latin texts from
 Attached with this project submission is a version of the database that was created from running the project. It will have all of the data stored into the database. The database was renamed for the sake of not messing with any runs of the program.
 Please see "Bugs/Edge Cases" section below if you have any questions.
 
-Project 1:
+Project 1 Phase 1:
 In the first phase of the project, multiple activities were performed. First, a database called "project1" was created with the schema as required by the project details. Next, the data was extracted from The Latin Library website.
 The Latin Library provides numerous of documents by different philosophers/authors/etc. all in Latin. I was tasked with selecting 7 different instances from the Latin Library, to extract its text, and store that text into a sqlite3 database.
 The seven instances I chose were as follows: Magna Carta, Christian Creeds, Roman Epitaphs, Novatian, Alfonsi, Bonaventure, and Gregorius Magnus.
@@ -22,6 +22,10 @@ This made it easier to insert the data into the project 1 database. However, due
 For example: The Magna Carta is one document. Therefore, it does not necessarily have multiple "books" associated with the document, therefore an assumption had to be made regarding this latin instance.
 Those assumptions can be seen below in the section title "Project 1 Text Assumptions". The data were inserted into the database through 7 different insert functions that made calls to the extraction functions to get the associated schema list.
 Then through the sqlite3 connection, SQL code was called through Python in each insert function, to insert the data into the table for each of the 7 instances.
+
+Project 1 Phase 2:
+
+
 
 Project 1 Text Assumptions:
 

@@ -449,7 +449,6 @@ def print_term_search(data, phrase):
         j += 1
 
 
-
 # Perform the query search of the database depending on what the user selects
 def get_phrase(num):
     if num == 1:

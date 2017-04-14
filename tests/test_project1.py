@@ -119,4 +119,26 @@ def test_pop_GregMag():
 Tests for the Translation Services
 '''
 
+
 # Need to test to see if dog == canis
+def test_fts_pop():
+    project1.create_fts_table()
+    project1.populate_fts_table()
+    conn = sqlite3.connect('project1.db')
+    cur = conn.cursor()
+    cur.execute('''select * from latin_fts;''')
+    assert cur.fetchall()
+
+
+def test_translation():
+    phrase = project1.get_latin_translation("dog")
+    assert phrase == "canis"
+
+
+def test_fts_search():
+    project1.create_fts_table()
+    project1.populate_fts_table()
+    conn = sqlite3.connect('project1.db')
+    cur = conn.cursor()
+    cur.execute('''select * from latin_fts WHERE passage MATCH 'Christus';''')
+    assert cur.fetchall()
